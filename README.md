@@ -9,6 +9,7 @@ Standalone Hermes Agent model-provider plugin: `claude-subscription-directsdk-ex
 - Hermes Agent 0.21.4 or newer, or `main` at/after `118984d7a02f` (hermes-agent PR #117451, the core half of #105863). On an older Hermes the plugin fails to load with a clear `Failed to load user provider plugin` warning rather than half-working.
 - Python 3.10+ on Linux, macOS or Windows. Native runs in its own process group (POSIX session / Windows `CREATE_NEW_PROCESS_GROUP`) and cancellation kills the whole tree (`killpg` / `taskkill /T`), so the `node` child behind the npm `claude.cmd` shim never outlives a cancelled request. The suite runs on all three in CI.
 - **The official Claude Code CLI, installed and logged in.** This plugin has no credentials of its own; everything goes through `claude`.
+- **Claude Code v2.1.284 or newer for the default `sonnet` route.** `sonnet` resolves to Sonnet 5.5 (`claude-sonnet-5-5[1m]`); native CLI versions before v2.1.284 do not have that model in their picker and the request fails at the `claude` layer, not in this plugin. Pin the exact id `claude-sonnet-5[1m]` instead if the installed CLI is older. See [Claude Code model configuration](https://code.claude.com/docs/en/model-config#sonnet-5-context-window).
 
 The plugin checks for `claude` at every seam and never guesses:
 
@@ -45,7 +46,7 @@ The integrated subscription-backed review completed seven Hermes calls with exac
 
 A real subscription-backed Hermes task built and tested a CSV auditor. Separate live qualifications exercised streaming tool rounds, restart/resume, host-side denial, authentic steering, cancellation during generation, and a real CLI subagent completion. This is a review build, not a full-parity or production-readiness claim. See the remaining limitations below.
 
-Native Claude Code **2.1.263** is qualified. Replay acknowledgments and extra-body behavior are version-sensitive interfaces, not a public arbitrary-history SDK guarantee. The generic host support (external-process providers, replay carriers, setup gating) lives in Hermes core; this repository is only the provider.
+Native Claude Code **2.1.263** is qualified for the plugin's transport (admission, replay, streaming, cancellation). Replay acknowledgments and extra-body behavior are version-sensitive interfaces, not a public arbitrary-history SDK guarantee. The generic host support (external-process providers, replay carriers, setup gating) lives in Hermes core; this repository is only the provider. **This transport qualification does not cover the Sonnet 5.5 `sonnet` route added below**, which requires Claude Code v2.1.284+ and is qualified separately (see Requirements and the model-routing qualification note).
 
 ## Login and select
 
